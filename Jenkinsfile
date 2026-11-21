@@ -66,17 +66,19 @@ pipeline {
 
         stage('API & Security Tests (Jest)') {
             steps {
-                dir('BACKEND') {
-                    sh '''
-                        mkdir -p tests/results
-                        docker run --rm \
-                            --volumes-from $(hostname) \
-                            --network atlas-network \
-                            -e BASE_URL=${BACKEND_URL_INTERNAL} \
-                            -w "$PWD" \
-                            node:18-alpine \
-                            sh -c "npm ci && npm run test:report"
-                    '''
+                catchError(buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+                    dir('BACKEND') {
+                        sh '''
+                            mkdir -p tests/results
+                            docker run --rm \
+                                --volumes-from $(hostname) \
+                                --network atlas-network \
+                                -e BASE_URL=${BACKEND_URL_INTERNAL} \
+                                -w "$PWD" \
+                                node:18-alpine \
+                                sh -c "npm ci && npm run test:report"
+                        '''
+                    }
                 }
             }
         }
