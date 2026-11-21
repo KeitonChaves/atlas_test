@@ -127,8 +127,8 @@ pipeline {
                             reportFiles: 'index.html',
                             reportName: 'JMeter Stress Report'
                         ])
-                    } catch (err) {
-                        echo "Nota: Plugin HTML Publisher no instalado (${err.message}). El reporte quedó archivado en Artifacts."
+                    } catch (Throwable err) {
+                        echo "Nota: Plugin HTML Publisher no instalado. El reporte quedó archivado en Artifacts."
                     }
                 }
                 if (params.TEARDOWN_AFTER_RUN) {
