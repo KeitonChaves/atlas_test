@@ -6,7 +6,7 @@ pipeline {
         string(name: 'JMETER_THREADS', defaultValue: '50', description: 'Número de usuarios concurrentes (Threads) para JMeter')
         string(name: 'JMETER_RAMPUP', defaultValue: '10', description: 'Tiempo de rampa en segundos para JMeter')
         string(name: 'JMETER_LOOPS', defaultValue: '3', description: 'Iteraciones por usuario en JMeter')
-        booleanParam(name: 'TEARDOWN_AFTER_RUN', defaultValue: true, description: 'Detener contenedores Docker al finalizar el pipeline')
+        booleanParam(name: 'TEARDOWN_AFTER_RUN', defaultValue: false, description: 'Detener contenedores Docker al finalizar el pipeline')
     }
 
     environment {
@@ -37,8 +37,14 @@ pipeline {
         stage('Build & Deploy Stack (Docker Compose)') {
             steps {
                 sh '''
-                    docker compose down --remove-orphans || true
-                    docker compose up -d --build
+                    if docker run --rm --network atlas-network curlimages/curl:8.5.0 -sf http://atlas-backend:4000/ > /dev/null 2>&1; then
+                        echo "Stack Atlas ya está activo y saludable en atlas-network. Reutilizando contenedores existentes."
+                    else
+                        echo "Levantando stack Atlas con Docker Compose..."
+                        docker rm -f atlas-postgres atlas-backend atlas-frontend || true
+                        docker compose down --remove-orphans || true
+                        docker compose up -d --build
+                    fi
                 '''
                 sh '''
                     echo "Esperando a que atlas-backend responda..."
