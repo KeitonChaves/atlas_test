@@ -44,13 +44,13 @@ if ($UseLocalJmeter) {
         -l /tests/results/results.jtl `
         -e -o /tests/results/html-report `
         -JPROTOCOL=http `
-        -JHOST=$TargetHost `
-        -JPORT=$Port `
-        -JTHREADS=$Threads `
-        -JRAMPUP=$RampUp `
-        -JLOOPS=$Loops `
-        -JUSER=$User `
-        -JPASS=$Pass
+        "-JHOST=$TargetHost" `
+        "-JPORT=$Port" `
+        "-JTHREADS=$Threads" `
+        "-JRAMPUP=$RampUp" `
+        "-JLOOPS=$Loops" `
+        "-JUSER=$User" `
+        "-JPASS=$Pass"
 }
 
 Write-Host "`nReporte HTML generado en: $HtmlDir\index.html" -ForegroundColor Green
